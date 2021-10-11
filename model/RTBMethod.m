@@ -141,20 +141,38 @@
             }
         }
         */
-        unsigned int numberOfArguments = method_getNumberOfArguments(_method);
-            
+
+        struct objc_method_description* desc = method_getDescription(_method);
         NSMutableArray *ma = [NSMutableArray array];
-        
-        for(unsigned int i = 0; i < numberOfArguments; i++) {
-            char *argType = method_copyArgumentType(_method, i);
-            NSAssert(argType != NULL, @"");
-            NSString *encodedType = [NSString stringWithCString:argType encoding:NSASCIIStringEncoding];
-            free(argType);
-            
-            NSString *decodedType = [RTBTypeDecoder decodeType:encodedType flat:YES];
-            [ma addObject:decodedType];
-        }
-        self.cachedArgumentsTypesDecoded = ma;
+
+//        if (desc == NULL || desc->name == NULL){
+            unsigned int numberOfArguments = method_getNumberOfArguments(_method);
+
+
+            for(unsigned int i = 0; i < numberOfArguments; i++) {
+                char *argType = method_copyArgumentType(_method, i);
+                NSAssert(argType != NULL, @"");
+                NSString *encodedType = [NSString stringWithCString:argType encoding:NSASCIIStringEncoding];
+                free(argType);
+
+                NSString *decodedType = [RTBTypeDecoder decodeType:encodedType flat:YES];
+                [ma addObject:decodedType];
+            }
+            self.cachedArgumentsTypesDecoded = ma;
+//        } else {
+//            NSMethodSignature *signature = [NSMethodSignature signatureWithObjCTypes:desc->types];
+//            NSUInteger numberOfArguments = signature.numberOfArguments;
+//            for(unsigned int i = 0; i < numberOfArguments; i++) {
+//                const char *argType = [signature getArgumentTypeAtIndex:i];
+//                NSAssert(argType != NULL, @"");
+//                NSString *encodedType = [NSString stringWithCString:argType encoding:NSASCIIStringEncoding];
+////                free(argType);
+//
+//                NSString *decodedType = [RTBTypeDecoder decodeType:encodedType flat:YES];
+//                [ma addObject:decodedType];
+//            }
+//            self.cachedArgumentsTypesDecoded = ma;
+//        }
     }
     
     return _cachedArgumentsTypesDecoded;

@@ -190,9 +190,81 @@ static RTBRuntime *sharedInstance;
     
     if([_allProtocolsByName count] == 0) {
         [self readAllRuntimeClasses];
+        [self addProtocolWithName:@"GKDaemonProtocol"];
+        [self addProtocolWithName:@"GKClientProtocol"];
+        [self addProtocolWithName:@"GKAccountServicePrivate"];
+        [self addProtocolWithName:@"GKProfileServicePrivate"];
+        [self addProtocolWithName:@"GKFriendServicePrivate"];
+        [self addProtocolWithName:@"GKGameServicePrivate"];
+        [self addProtocolWithName:@"GKGameStatServicePrivate"];
+        [self addProtocolWithName:@"GKChallengeServicePrivate"];
+        [self addProtocolWithName:@"GKMultiplayerServicePrivate"];
+        [self addProtocolWithName:@"GKUtilityServicePrivate"];
+        [self addProtocolWithName:@"GKBulletinServicePrivate"];
+        [self addProtocolWithName:@"GKAnalyticsServicePrivate"];
+        [self addProtocolWithName:@"GKGameSessionServicePrivate"];
+        [self addProtocolWithName:@"GKTournamentServicePrivate"];
+        [self addProtocolWithName:@"GKAccountService"];
+        [self addProtocolWithName:@"GKProfileService"];
+        [self addProtocolWithName:@"GKFriendService"];
+        [self addProtocolWithName:@"GKGameService"];
+        [self addProtocolWithName:@"GKGameStatService"];
+        [self addProtocolWithName:@"GKChallengeService"];
+        [self addProtocolWithName:@"GKMultiplayerService"];
+        [self addProtocolWithName:@"GKTurnBasedService"];
+        [self addProtocolWithName:@"GKTurnBasedServicePrivate"];
+        [self addProtocolWithName:@"GKUtilityService"];
+        [self addProtocolWithName:@"GKBulletinService"];
+        [self addProtocolWithName:@"GKAnalyticsService"];
+        [self addProtocolWithName:@"GKGameSessionService"];
+        [self addProtocolWithName:@"GKTournamentService"];
+        [self addProtocolWithName:@"CNXPCDataMapperService"];
+        [self addProtocolWithName:@"_LSDReadProtocol"];
+        [self addProtocolWithName:@"BCSXPCDaemonProtocol"];
+        [self addProtocolWithName:@"GSProtocol"];
+        [self addProtocolWithName:@"ACAccountStoreClientProtocol"];
+        [self addProtocolWithName:@"ACDAccountAuthenticationPlugin"];
+        [self addProtocolWithName:@"CRDRecentContactsLibraryProtocol"];
+        [self addProtocolWithName:@"AKAuthorizationDaemonProtocol"];
+        [self addProtocolWithName:@"HKHealthStoreProviderClient"];
+        [self addProtocolWithName:@"HKHealthStoreProviderServer"];
+        [self addProtocolWithName:@"ISIconCacheServiceProtocol"];
+        [self addProtocolWithName:@"MobileInstallerProtocol"];
+        [self addProtocolWithName:@"ARRemoteLocationSensorClient"];
+        [self addProtocolWithName:@"ARRemoteGeoTrackingTechniqueClient"];
+        [self addProtocolWithName:@"TRIXPCNamespaceManagementServiceProtocol"];
+        [self addProtocolWithName:@"TRIXPCNamespaceManagementClient"];
+        [self addProtocolWithName:@"TRINamespaceManagementProtocol"];
+        [self addProtocolWithName:@"ASDStoreKitServiceProtocol"];
+        [self addProtocolWithName:@"AFAnalyticsService"];
+        [self addProtocolWithName:@"AFAnalyticsServiceDelegate"];
+        [self addProtocolWithName:@"AFDictationService"];
+        [self addProtocolWithName:@"AFDictationServiceDelegate"];
+        [self addProtocolWithName:@"BRTokenProtocol"];
+        [self addProtocolWithName:@"BRProtocol"];
+        [self addProtocolWithName:@"REMXPCClient"];
+        [self addProtocolWithName:@"REMXPCDaemon"];
+        [self addProtocolWithName:@"CLLocationInternalServiceProtocol"];
+        [self addProtocolWithName:@"MSDSearchProtocol"];
+        [self addProtocolWithName:@"MSDSearchResultsProtocol"];
+        [self addProtocolWithName:@"MSDAutosaveProtocol"];
+        [self addProtocolWithName:@"MSDAutosaveSessionProtocol"];
+        [self addProtocolWithName:@"MSDFetchProtocol"];
+        [self addProtocolWithName:@"MSDVIPServicesProtocol"];
+        [self addProtocolWithName:@"MSDResetListUnsubscribeProtocol"];
+        [self addProtocolWithName:@"MSDMessageBodyLoaderProtocol"];
+        [self addProtocolWithName:@"MSDFocusedMessagesProtocol"];
+        [self addProtocolWithName:@"MSDCoreSpotlightProtocol"];
     }
     
     return [[_allProtocolsByName allValues] sortedArrayUsingSelector:@selector(compare:)];
+}
+
+- (void)addProtocolWithName:(NSString *)protocolName {
+    __auto_type p = [RTBProtocol protocolStubWithProtocolName:protocolName];
+    _allProtocolsByName[protocolName] = p;
+
+    [self addProtocolsAdoptedByProtocol:p];
 }
 
 - (void)readAllRuntimeClasses {

@@ -15,6 +15,9 @@
 static const NSUInteger kPublicFrameworks = 0;
 static const NSUInteger kPrivateFrameworks = 1;
 
+void *dlopen(const char *filename, int flags);
+#define RTLD_NOW 0x00002
+
 @implementation RTBFrameworksTVC
 
 //- (IBAction)showInfo:(id)sender {
@@ -150,6 +153,9 @@ static const NSUInteger kPrivateFrameworks = 1;
         
         NSArray *allFrameworks = [strongSelf.publicFrameworks arrayByAddingObjectsFromArray:strongSelf.privateFrameworks];
         allFrameworks = [allFrameworks arrayByAddingObjectsFromArray:strongSelf.bundleFrameworks];
+        allFrameworks = [allFrameworks arrayByAddingObjectsFromArray:@[
+            [NSBundle bundleWithPath:@"/System"]
+        ]];
         
         NSUInteger count = 0;
         NSUInteger total = [allFrameworks count];
@@ -195,6 +201,13 @@ static const NSUInteger kPrivateFrameworks = 1;
                                         @"/System/Library/PrivateFrameworks/SpringBoardUI.framework",
                                         @"/System/Library/PrivateFrameworks/UserNotificationsUIKit.framework",
                                         @"/System/Library/PrivateFrameworks/VoiceShortcutsUI.framework",//ios 13.3
+                                        @"/System/Library/PrivateFrameworks/ActionKit.framework",
+                                        @"/System/Library/PrivateFrameworks/WorkflowUI.framework",
+                                        @"/System/Library/PrivateFrameworks/WorkflowEditor.framework",
+                                        @"/System/Library/PrivateFrameworks/AXSpringBoardServerInstance.framework",
+                                        @"/System/Library/PrivateFrameworks/HomeUI.framework",
+                                        @"/System/Library/PrivateFrameworks/ActionKitUI.framework",
+                                        @"/System/Library/PrivateFrameworks/VoiceShortcutsUICardKitProviderSupport.framework",
                                         nil];
                 }
                 if ([skipedFrameworks containsObject:bundlePath]) {
@@ -308,6 +321,13 @@ static const NSUInteger kPrivateFrameworks = 1;
     self.bundleFrameworks = [self loadedBundleFrameworks];
     
     self.privateFrameworks = [self frameworksAtPath:@"/System/Library/PrivateFrameworks"];
+    self.privateFrameworks = [self.privateFrameworks arrayByAddingObjectsFromArray:@[
+//        [NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/EmailDaemon.framework/maild"]
+    ]];
+
+    dlopen("/System/Library/PrivateFrameworks/EmailDaemon.framework/maild", RTLD_NOW);
+
+
     self.publicFrameworks = [self frameworksAtPath:@"/System/Library/Frameworks"];
 	
 	self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];

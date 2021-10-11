@@ -434,6 +434,7 @@
     NSDictionary *d = [self dyldInfo];
     
     NSString *classFilePath = d[@"filePath"];
+    if(classFilePath == nil) classFilePath = @"Unknown";
     
     NSMutableDictionary *groupsByImage = [NSMutableDictionary dictionary];
 
@@ -467,7 +468,8 @@
             if([[NSUserDefaults standardUserDefaults] boolForKey:@"RTBShowOCRuntimeClasses"] == NO) {
                 if([filePath isEqualToString:runtimeBrowserPath]) continue;
             };
-            
+
+            if(filePath == nil) filePath = @"Unknown";
             if(categoryName == nil) categoryName = @"";
             
             if(groupsByImage[filePath] == nil) {

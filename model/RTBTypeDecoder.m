@@ -634,6 +634,11 @@ NSString *rtb_functionSignatureNote(BOOL showFunctionSignatureNote) {
             ++ivT;
             result = [self typeEncParseObjectRefInStruct:inStruct spaceAfter:spaceAfter];
             break;
+//        case '<' :   // typed block
+//            ++ivT;
+//            closingChar = '>';
+//            result = [self typeEncParseTypedBlockRefSpaceAfter:spaceAfter];
+//            break;
         case '[' :   // array
             ++ivT;
             result = [self typeEncParseArrayOf:depth sPart:sPart inLine:inLine inParam:inParam spaceAfter:spaceAfter];
@@ -710,6 +715,9 @@ NSString *rtb_functionSignatureNote(BOOL showFunctionSignatureNote) {
         
         BOOL isBlock = *ivT == '?';
         ivT += isBlock; // only increament ivT if the next character is actually being consumed
+        if (isBlock && *ivT == '<') {
+            return [self typeEncParseTypedBlockRefSpaceAfter:spaceAfter];
+        }
         if(isBlock && [[NSUserDefaults standardUserDefaults] boolForKey:@"RTBAddCommentsForBlocks"]) {
             typeS = (spaceAfter ? @"id /* block */ " : @"id /* block */");
         } else {
@@ -717,6 +725,38 @@ NSString *rtb_functionSignatureNote(BOOL showFunctionSignatureNote) {
         }
     }
     
+    return [NSDictionary dictionaryWithObjectsAndKeys:typeS, TYPE_LABEL, modifierS, MODIFIER_LABEL, nil];
+}
+
+- (NSDictionary *)typeEncParseTypedBlockRefSpaceAfter:(BOOL)spaceAfter {
+    NSString *typeS = @"";
+    NSString *modifierS = @"";
+    BOOL isUnnamedType = YES;
+    const char *tmp;
+
+    ++ivT;
+    NSMutableArray *ma = [NSMutableArray array];
+    while (*ivT != '>') {
+        @autoreleasepool {
+            NSDictionary *d = nil;
+            [self skipDigits];
+            //printf("--> %s\n", typeDecoder.ivT);
+            if(strlen(ivT) == 0) break;
+            d = [self flatCTypeDeclForEncType];
+            [ma addObject:d[TYPE_LABEL]];
+        }
+    }
+    ++ivT;
+    typeS = [typeS stringByAppendingString:ma[0]];
+    typeS = [typeS stringByAppendingString:@" (^)("];
+    for(unsigned int i = 2; i < ma.count; i++) {
+        typeS = [typeS stringByAppendingString:ma[i]];
+        if (i != ma.count - 1) {
+            typeS = [typeS stringByAppendingString:@", "];
+        }
+    }
+    typeS = [typeS stringByAppendingString:spaceAfter ? @") " : @")"];
+
     return [NSDictionary dictionaryWithObjectsAndKeys:typeS, TYPE_LABEL, modifierS, MODIFIER_LABEL, nil];
 }
 
